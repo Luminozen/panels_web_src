@@ -14,9 +14,9 @@ class BoardView(APIView):
         if board_id:
             for board in BOARDS:
                 if board.get('id') == board_id:
-                    return Response(board)
-            return Response({'message': 'board with current id does not exist'})
-        return Response(BOARDS)
+                    return Response(board, status=status.HTTP_200_OK)
+            return Response({'message': 'board with current id does not exist'}, status=status.HTTP_204_NO_CONTENT)
+        return Response(BOARDS, status=status.HTTP_200_OK)
 
     def post(self, request):
         board_data = dict(
@@ -41,10 +41,11 @@ class BoardView(APIView):
         board_id = request.data.get('board_id')
         name = board_id = request.data.get('name')
         if board_id:
+            # При обходе по циклу в board попадает ссылка на очередной объект из BOARDS
             for board in BOARDS:
                 if board.get('id') == board_id:
                     board['name'] = name
-                    return Response({'message': 'board with id updated'.format(board_id)}, status=status.HTTP_202_ACCEPTED)
+                    return Response({'message': 'board with id updated'.format(board_id)}, status=status.HTTP_200_OK)
             return Response({'message': 'board with id does not exist'}, status=status.HTTP_204_NO_CONTENT)
         return Response({'message': 'board with id does not exist'}, status=status.HTTP_204_NO_CONTENT)
 
@@ -55,7 +56,7 @@ class BoardView(APIView):
             for index in range(len(BOARDS)):
                 if BOARDS[index].get(board_id) == board_id:
                     del BOARDS[index]
-                    return Response({'message': f'board with id: {board_id} deleted'}, status=status.HTTP_202_ACCEPTED)
+                    return Response({'message': f'board with id: {board_id} deleted'}, status=status.HTTP_200_OK)
             return Response({'message': 'board with id does not exist'}, status=status.HTTP_204_NO_CONTENT)
         return Response({'message': 'board with id does not exist'}, status=status.HTTP_204_NO_CONTENT)
         
