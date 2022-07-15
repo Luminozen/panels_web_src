@@ -6,13 +6,7 @@ boards = [
     path('', view=BoardView.as_view()),
 ]
 
-# board_messages = [
-#     path('list/', view=BoardMessageView.as_view()),
-# ] 
 
 urlpatterns = [
     path('boards/', include(boards)),
-    # path('board_messages/', include(board_messages)),
 ]
-
-# {'message': 'board message'}

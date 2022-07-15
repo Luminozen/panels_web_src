@@ -1,4 +1,4 @@
 
 export const URLS = {
-  board: 'board/'
+  board: 'boards/'
 }
