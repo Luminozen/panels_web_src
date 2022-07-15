@@ -2,6 +2,7 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
+import rest_framework.status as status
 
 from .json_DB import BOARDS
 
@@ -32,7 +33,7 @@ class BoardView(APIView):
 
         BOARDS.append(board_data)
 
-        return Response({'message': 'board with id {} created'.format(board_data.get('board_id'))})
+        return Response({'message': 'board with id {} created'.format(board_data.get('board_id'))}, status=status.HTTP_201_CREATED)
 
         # Добавить дополнительный board в массив BOARDS
 
@@ -43,11 +44,18 @@ class BoardView(APIView):
             for board in BOARDS:
                 if board.get('id') == board_id:
                     board['name'] = name
-                    return Response({'message': 'board with id updated'.format(board_id)})
-            return Response({'message': 'board with id does not exist'})
-        return Response({'message': 'board with id does not exist'})
+                    return Response({'message': 'board with id updated'.format(board_id)}, status=status.HTTP_202_ACCEPTED)
+            return Response({'message': 'board with id does not exist'}, status=status.HTTP_204_NO_CONTENT)
+        return Response({'message': 'board with id does not exist'}, status=status.HTTP_204_NO_CONTENT)
 
     def delete(self, request):
         print(request.data)
         board_id = request.data.get('board_id')
+        if board_id:
+            for index in range(len(BOARDS)):
+                if BOARDS[index].get(board_id) == board_id:
+                    del BOARDS[index]
+                    return Response({'message': f'board with id: {board_id} deleted'}, status=status.HTTP_202_ACCEPTED)
+            return Response({'message': 'board with id does not exist'}, status=status.HTTP_204_NO_CONTENT)
+        return Response({'message': 'board with id does not exist'}, status=status.HTTP_204_NO_CONTENT)
         
