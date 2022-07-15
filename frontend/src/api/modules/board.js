@@ -1,7 +1,8 @@
 import { BASE_URL } from '@/api/base'
+import {URLS} from '@/api/urls'
 
 export function getItem(params) {
-  return BASE_URL.get('path', {
+  return BASE_URL.get(URLS.board, {
     params,
     headers: {},
   })
