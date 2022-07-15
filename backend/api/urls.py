@@ -3,7 +3,7 @@ from django.conf.urls import include
 from .views import BoardView
 
 boards = [
-    path('list/', view=BoardView.as_view()),
+    path('', view=BoardView.as_view()),
 ]
 
 # board_messages = [
@@ -12,7 +12,7 @@ boards = [
 
 urlpatterns = [
     path('boards/', include(boards)),
-    path('board_messages/', include(board_messages)),
+    # path('board_messages/', include(board_messages)),
 ]
 
 # {'message': 'board message'}

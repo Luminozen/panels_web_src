@@ -1,3 +1,3 @@
-// Экземпляр BASE_URL
+// Создать Экземпляр BASE_URL
 
 export {BASE_URL}
