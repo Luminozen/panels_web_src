@@ -5,21 +5,20 @@ from rest_framework.response import Response
 import rest_framework.status as status
 
 from .json_DB import BOARDS
-
+from .utils import call_stored_function, call_stored_procedure
 
 class BoardView(APIView):
 
     def get(self, request):
-        board_id = request.GET.get('board_id')
-        if board_id:
-            for board in BOARDS:
-                if board.get('id') == board_id:
-                    print(board)
-                    return Response(board, status=status.HTTP_200_OK)
-            return Response({'message': 'board with current id does not exist'}, status=status.HTTP_204_NO_CONTENT)
-        return Response(BOARDS, status=status.HTTP_200_OK)
+        f_args = {
+            'board_id': request.GET.get('board_id')
+        }
+        
+        boards = call_stored_function('boards.get_board', 'default', True if f_args.get('board_id') else False, *f_args.values())
+        return Response(boards, status=status.HTTP_200_OK)
 
     def post(self, request):
+        # 1. Вот это в f_args засунуть напоминаю что это словарь ключ:значение
         board_data = dict(
             board_id=request.data.get('board_id'),
             name=request.data.get('board_name'),
@@ -32,32 +31,49 @@ class BoardView(APIView):
             boards_data=request.data.get('boards_data'),
             datatime_update_pikas=request.data.get('datatime_update_pikas'))
 
-        BOARDS.append(board_data)
-
+        # 2. Здеся вызываем хранимку add_board через call_stored_procedure - она ничего не вернет вам поэтому если выполнилась
+        # то и бог с ней а если вернет то это в ответ пихаем
+        """
+        CREATE OR REPLACE PROCEDURE boards.add_board(
+            IN p_board_name character varying,
+            IN p_description character varying,
+            IN p_id_bussstop_yandex integer,
+            IN p_id_tramstop_yandex integer,
+            IN p_zabbix_node_name character varying,
+            IN p_id_busstop_pikas integer,
+            IN p_id_tramstop_pikas integer,
+            IN p_datetime_update_pikas timestamp without time zone,
+            IN p_boards_data character varying)
+        LANGUAGE 'plpgsql'
+        """
+        pass
         return Response({'message': 'board with id {} created'.format(board_data.get('board_id'))}, status=status.HTTP_201_CREATED)
 
         # Добавить дополнительный board в массив BOARDS
 
     def put(self, request):
-        board_id = request.data.get('board_id')
-        name = board_id = request.data.get('name')
-        if board_id:
-            # При обходе по циклу в board попадает ссылка на очередной объект из BOARDS
-            for board in BOARDS:
-                if board.get('id') == board_id:
-                    board['name'] = name
-                    return Response({'message': 'board with id updated'.format(board_id)}, status=status.HTTP_200_OK)
-            return Response({'message': 'board with id does not exist'}, status=status.HTTP_204_NO_CONTENT)
+        # 1. Параметры из запроса в f_args засунуть напоминаю что это словарь ключ:значение
+        pass
+        # 2. Здеся вызываем хранимку update_board через call_stored_procedure - она ничего не вернет вам поэтому если выполнилась
+        # то и бог с ней а если вернет то это в ответ пихаем
+        """
+        CREATE OR REPLACE PROCEDURE boards.update_board(
+        	IN p_board_id integer,
+        	IN p_board_name character varying,
+        	IN p_description character varying,
+        	IN p_id_bussstop_yandex integer,
+        	IN p_id_tramstop_yandex integer,
+        	IN p_zabbix_node_name character varying,
+        	IN p_id_busstop_pikas integer,
+        	IN p_id_tramstop_pikas integer,
+        	IN p_datetime_update_pikas timestamp without time zone,
+        	IN p_boards_data character varying)
+        LANGUAGE 'plpgsql'
+        """
+        pass
         return Response({'message': 'board with id does not exist'}, status=status.HTTP_204_NO_CONTENT)
 
     def delete(self, request):
-        print(request.data)
-        board_id = request.data.get('board_id')
-        if board_id:
-            for index in range(len(BOARDS)):
-                if BOARDS[index].get(board_id) == board_id:
-                    del BOARDS[index]
-                    return Response({'message': f'board with id: {board_id} deleted'}, status=status.HTTP_200_OK)
-            return Response({'message': 'board with id does not exist'}, status=status.HTTP_204_NO_CONTENT)
+        # Пока не делоем
         return Response({'message': 'board with id does not exist'}, status=status.HTTP_204_NO_CONTENT)
         

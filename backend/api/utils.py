@@ -1,10 +1,18 @@
 from django.db import connections
+
+
 def call_stored_function(function_name, db_name='default', single=False, *args):
+    """
+    function_name: str - stored function name with schema EX: public.some_function
+    """
     try:
         with connections[db_name].cursor() as cursor:
             result = []
- 
+            # Выполняем функцию на базе
             cursor.callproc(function_name, args)
+
+            
+            # Получем описание возвращаемого значения
             desc = cursor.description
             row_count = cursor.rowcount
  

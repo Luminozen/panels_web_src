@@ -7,3 +7,7 @@ BOARDS = [
     {'id': 3, 'name': 'ДКМ', 'description': 'в ЗШК', 'id_busstop_yandex': 10008384, 'id_tramstop_yandex': None, 'zabbix_node_name': 'board_id3',
         'id_busstop_pikas': 97847, 'id_tramstop_pikas': None, 'boards_data': None, 'datatime_update_pikas': None},
 ]
+
+[
+    (1, 'Набережная в сторону заречья', 'Набережная в сторону заречья'),
+]
