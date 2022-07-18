@@ -14,6 +14,7 @@ class BoardView(APIView):
         if board_id:
             for board in BOARDS:
                 if board.get('id') == board_id:
+                    print(board)
                     return Response(board, status=status.HTTP_200_OK)
             return Response({'message': 'board with current id does not exist'}, status=status.HTTP_204_NO_CONTENT)
         return Response(BOARDS, status=status.HTTP_200_OK)
@@ -21,8 +22,8 @@ class BoardView(APIView):
     def post(self, request):
         board_data = dict(
             board_id=request.data.get('board_id'),
-            name=request.data.get('name'),
-            description=request.data.get('description'),
+            name=request.data.get('board_name'),
+            description=request.data.get('board_description'),
             id_busstop_yandex=request.data.get('id_busstop_yandex'),
             id_tramstop_yandex=request.data.get('id_tramstop_yandex'),
             zabbix_node_name=request.data.get('zabbix_node_name'),
