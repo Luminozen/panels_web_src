@@ -7,6 +7,9 @@ import rest_framework.status as status
 from .json_DB import BOARDS
 from .utils import call_stored_function, call_stored_procedure
 
+from datetime import datetime
+import time
+
 class BoardView(APIView):
 
     def get(self, request):
@@ -19,17 +22,20 @@ class BoardView(APIView):
 
     def post(self, request):
         # 1. Вот это в f_args засунуть напоминаю что это словарь ключ:значение
-        board_data = dict(
-            board_id=request.data.get('board_id'),
-            name=request.data.get('board_name'),
-            description=request.data.get('board_description'),
-            id_busstop_yandex=request.data.get('id_busstop_yandex'),
-            id_tramstop_yandex=request.data.get('id_tramstop_yandex'),
-            zabbix_node_name=request.data.get('zabbix_node_name'),
-            id_busstop_pikas=request.data.get('id_busstop_pikas'),
-            id_tramstop_pikas=request.data.get('id_tramstop_pikas'),
-            boards_data=request.data.get('boards_data'),
-            datatime_update_pikas=request.data.get('datatime_update_pikas'))
+        f_args = {
+            'name': str(request.data.get('board_name')) ,
+            'description': str(request.data.get('board_description')),
+            'id_busstop_yandex': int(request.data.get('id_busstop_yandex')),
+            'id_tramstop_yandex': int(request.data.get('id_tramstop_yandex')),
+            'zabbix_node_name': str(request.data.get('zabbix_node_name')),
+            'id_busstop_pikas': int(request.data.get('id_busstop_pikas')),
+            'id_tramstop_pikas': int(request.data.get('id_tramstop_pikas')),
+            'datatime_update_pikas': datetime.now(),
+            'boards_data': str(request.data.get('boards_data')),
+        }
+
+        for v in f_args.values():
+            print(type(v))
 
         # 2. Здеся вызываем хранимку add_board через call_stored_procedure - она ничего не вернет вам поэтому если выполнилась
         # то и бог с ней а если вернет то это в ответ пихаем
@@ -46,8 +52,9 @@ class BoardView(APIView):
             IN p_boards_data character varying)
         LANGUAGE 'plpgsql'
         """
-        pass
-        return Response({'message': 'board with id {} created'.format(board_data.get('board_id'))}, status=status.HTTP_201_CREATED)
+        result = call_stored_procedure('boards.add_board', 'default', *f_args.values())
+        print(result)
+        return Response({'message': 'board with id {} created'.format(f_args.get('board_id'))}, status=status.HTTP_201_CREATED)
 
         # Добавить дополнительный board в массив BOARDS
 
@@ -77,3 +84,5 @@ class BoardView(APIView):
         # Пока не делоем
         return Response({'message': 'board with id does not exist'}, status=status.HTTP_204_NO_CONTENT)
         
+
+
